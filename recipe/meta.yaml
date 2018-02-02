@@ -12,23 +12,24 @@ source:
   sha256: {{ hash }}
 
 build:
-  number: 0
+  number: 1
   skip: True  # [not win]
 
 requirements:
   build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+  host:
     - cython
     - python
     - setuptools
     - winpty
     - backports.shutil_which  # [py2k]
-    - vc 14
   run:
     - backports.shutil_which  # [py2k]
     - setuptools  # [py2k]
     - python
     - winpty
-    - vs2015_runtime
 
 test:
   imports:
@@ -51,3 +52,4 @@ extra:
     - ccordoba12
     - andfoy
     - goanpeca
+    - jjhelmus
