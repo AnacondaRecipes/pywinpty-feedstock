@@ -12,24 +12,27 @@ source:
   sha256: {{ hash }}
 
 build:
-  number: 1
+  number: 2
   skip: True  # [not win]
 
 requirements:
   build:
-    - {{ compiler('c') }}
-    - {{ compiler('cxx') }}
+    - {{ compiler('c') }}    # [not py2k]
+    - {{ compiler('cxx') }}  # [not py2k]
   host:
     - cython
     - python
     - setuptools
     - winpty
     - backports.shutil_which  # [py2k]
+    - m2w64-toolchain         # [py2k]
+    - libpython               # [py2k]
   run:
     - backports.shutil_which  # [py2k]
     - setuptools  # [py2k]
     - python
     - winpty
+    - m2w64-gcc-libs          # [py2k and win32]
 
 test:
   imports:
