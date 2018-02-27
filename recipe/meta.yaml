@@ -1,6 +1,6 @@
 {% set name = "pywinpty" %}
-{% set version = "0.5" %}
-{% set hash = "013e58a93079fb7bc72ba14dd6c86b473ea09797d94629eea1fe3c738f086ad2" %}
+{% set version = "0.5.1" %}
+{% set hash = "03df08a483c7d2e51ddcd01abca4c338166725b69dfd27d7400d6b7b856bf3c1" %}
 
 package:
   name: {{ name }}
@@ -12,27 +12,24 @@ source:
   sha256: {{ hash }}
 
 build:
-  number: 2
+  number: 0
   skip: True  # [not win]
 
 requirements:
-  build:
-    - {{ compiler('c') }}    # [not py2k]
-    - {{ compiler('cxx') }}  # [not py2k]
+  # use m2w64 toolchain for building
   host:
-    - cython
     - python
     - setuptools
+    - cython
     - winpty
+    - m2w64-toolchain
+    - libpython
     - backports.shutil_which  # [py2k]
-    - m2w64-toolchain         # [py2k]
-    - libpython               # [py2k]
   run:
-    - backports.shutil_which  # [py2k]
-    - setuptools  # [py2k]
     - python
     - winpty
-    - m2w64-gcc-libs          # [py2k and win32]
+    - m2w64-gcc-libs
+    - backports.shutil_which  # [py2k]
 
 test:
   imports:
