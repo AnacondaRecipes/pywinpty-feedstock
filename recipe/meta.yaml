@@ -27,6 +27,8 @@ requirements:
     - python
     - winpty
     - m2w64-gcc-libs
+    # ran into an overlinking error on win32. not sure if it was an issue with exports in m2w64-gcc-libs or this?
+    - m2w64-gcc-libs-core     # [win32]
 
 test:
   imports:
