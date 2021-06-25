@@ -13,9 +13,22 @@ build:
   skip: True  # [not win]
 
 requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - clang
+    - llvm
+    - rust
+    - llvmdev
+    - llvm-tools
+    - libclang
+    - maturin
+    - toml
+    - pip
+    - winpty
   host:
     - cython
-    - python
+    - python >=3.6
     - pip
     - winpty
     - backports.shutil_which  # [py2k]
@@ -24,7 +37,7 @@ requirements:
     - libpython
   run:
     - backports.shutil_which  # [py2k]
-    - python
+    - python >=3.6
     - winpty
     - m2w64-gcc-libs
     # ran into an overlinking error on win32. not sure if it was an issue with exports in m2w64-gcc-libs or this?
