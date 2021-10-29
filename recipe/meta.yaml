@@ -1,4 +1,4 @@
-{% set version = "0.5.7" %}
+{% set version = "1.1.5" %}
 
 package:
   name: pywinpty
@@ -6,7 +6,7 @@ package:
 
 source:
   url: https://pypi.io/packages/source/p/pywinpty/pywinpty-{{ version }}.tar.gz
-  sha256: 2d7e9c881638a72ffdca3f5417dd1563b60f603e1b43e5895674c2a1b01f95a0
+  sha256: 92125f0f8e4e64bb5f3bf270a182c9206dc1765542c59bc07441908a9db17504
 
 build:
   number: 0
