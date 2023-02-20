@@ -1,4 +1,4 @@
-{% set version = "0.5.7" %}
+{% set version = "2.0.2" %}
 
 package:
   name: pywinpty
@@ -6,44 +6,48 @@ package:
 
 source:
   url: https://pypi.io/packages/source/p/pywinpty/pywinpty-{{ version }}.tar.gz
-  sha256: 2d7e9c881638a72ffdca3f5417dd1563b60f603e1b43e5895674c2a1b01f95a0
+  sha256: 20ec117183f79642eff555ce0dd1823f942618d65813fb6122d14b6e34b5d05a
 
 build:
   number: 0
-  skip: True  # [not win]
+  skip: true  # [not win]
 
 requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - clang
+    - llvm
+    - rust
+    - llvmdev
+    - llvm-tools
+    - libclang
+    - maturin <=0.12.0
+    - toml
+    - pip
+    - winpty
   host:
-    - cython
     - python
     - pip
     - winpty
-    - backports.shutil_which  # [py2k]
-    # use the m2w64 toolchain for all builds
-    - m2w64-toolchain
-    - libpython
   run:
-    - backports.shutil_which  # [py2k]
     - python
     - winpty
-    - m2w64-gcc-libs
-    # ran into an overlinking error on win32. not sure if it was an issue with exports in m2w64-gcc-libs or this?
-    - m2w64-gcc-libs-core     # [win32]
 
 test:
   imports:
-    # It hangs in Python 2
-    - winpty  # [not py2k]
+    - winpty
 
 about:
   home: https://github.com/spyder-ide/pywinpty
   license: MIT
   license_file: LICENSE.txt
-  summary: 'Python bindings for the winpty library'
+  summary: Pseudoterminals for Windows in Python
   description: |
-    Python bindings for the winpty pseudo terminal library.
-    It allows to create and communicate with Windows processes that print outputs
-     and recieve inputs via console input and output pipes.
+    PyWinpty allows creating and communicating with Windows processes that
+    receive input and print outputs via console input and output pipes.
+    PyWinpty supports both the native ConPTY interface and the previous,
+    fallback winpty library.
   doc_url: https://github.com/spyder-ide/pywinpty
   dev_url: https://github.com/spyder-ide/pywinpty
 
@@ -52,6 +56,4 @@ extra:
     - blink1073
     - ccordoba12
     - andfoy
-    - goanpeca
-    - jjhelmus
     - ocefpaf
