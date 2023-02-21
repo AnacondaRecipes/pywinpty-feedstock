@@ -9,24 +9,26 @@ source:
   sha256: 20ec117183f79642eff555ce0dd1823f942618d65813fb6122d14b6e34b5d05a
 
 build:
-  number: 0
+  number: 1
   skip: true  # [not win]
 
 requirements:
   build:
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
-    - clang
-    - llvm
+    - clangdev
     - rust
     - llvmdev
     - llvm-tools
     - libclang
     - maturin <=0.12.0
     - toml
-    - pip
     - winpty
   host:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - setuptools
+    - wheel
     - python
     - pip
     - winpty
