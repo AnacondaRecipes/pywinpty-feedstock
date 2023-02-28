@@ -47,6 +47,7 @@ about:
   home: https://github.com/spyder-ide/pywinpty
   license: MIT
   license_file: LICENSE.txt
+  license_family: MIT
   summary: Pseudoterminals for Windows in Python
   description: |
     PyWinpty allows creating and communicating with Windows processes that
