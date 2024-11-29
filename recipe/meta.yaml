@@ -1,4 +1,4 @@
-{% set version = "2.0.10" %}
+{% set version = "2.0.14" %}
 
 package:
   name: pywinpty
@@ -6,33 +6,27 @@ package:
 
 source:
   url: https://pypi.io/packages/source/p/pywinpty/pywinpty-{{ version }}.tar.gz
-  sha256: cdbb5694cf8c7242c2ecfaca35c545d31fa5d5814c3d67a4e628f803f680ebea
+  sha256: 18bd9529e4a5daf2d9719aa17788ba6013e594ae94c5a0c27e83df3278b0660e
 
 build:
   number: 0
-  skip: true  # [not win or py<37]
+  skip: true  # [not win or py<38]
+  script: 
+    - {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+    - cargo-bundle-licenses --format yaml --output "{{ SRC_DIR }}\THIRDPARTY.yml"
 
 requirements:
   build:
-    - {{ compiler('c') }}
-    - {{ compiler('cxx') }}
-    - clangdev
-    - rust
-    - llvmdev
-    - llvm-tools
-    - libclang
-    - maturin <=0.12.0
-    - toml
-    - winpty
+    - {{ compiler('rust') }}
+    - cargo-bundle-licenses
   host:
-    - setuptools
-    - wheel
     - python
     - pip
-    - winpty
+    - maturin >=1.1,<2.0
+    - winpty 0.4.3
   run:
     - python
-    - winpty
+    - {{ pin_compatible('winpty') }}
 
 test:
   imports:
@@ -46,7 +40,9 @@ test:
 about:
   home: https://github.com/spyder-ide/pywinpty
   license: MIT
-  license_file: LICENSE.txt
+  license_file: 
+    - LICENSE.txt
+    - THIRDPARTY.yml
   license_family: MIT
   summary: Pseudoterminals for Windows in Python
   description: |
