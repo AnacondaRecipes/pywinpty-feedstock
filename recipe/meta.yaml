@@ -31,12 +31,18 @@ requirements:
     - {{ pin_compatible('winpty') }}
 
 test:
+  source_files:
+    - winpty/tests
+    - runtests.py
   imports:
     - winpty
   requires:
     - pip
+    - python
+    - pytest
   commands:
     - pip check
+    - python -m runtests
 
 
 about:
