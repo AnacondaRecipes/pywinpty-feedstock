@@ -1,7 +1,8 @@
 {% set version = "2.0.15" %}
+{% set name = "pywinpty" %}
 
 package:
-  name: pywinpty
+  name: {{ name }}
   version: {{ version }}
 
 source:
