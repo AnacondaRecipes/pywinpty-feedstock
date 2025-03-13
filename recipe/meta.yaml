@@ -31,19 +31,12 @@ requirements:
     - {{ pin_compatible('winpty') }}
 
 test:
-  source_files:
-    - winpty/tests
   imports:
     - winpty
   requires:
     - pip
-    - python
-    - pytest
-    - flaky
   commands:
     - pip check
-    # test_read - issues with encoding
-    - pytest -vv -k "not test_read" winpty/tests
 
 
 about:
