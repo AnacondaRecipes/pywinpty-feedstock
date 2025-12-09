@@ -1,4 +1,4 @@
-{% set version = "2.0.15" %}
+{% set version = "3.0.2" %}
 {% set name = "pywinpty" %}
 
 package:
@@ -6,13 +6,13 @@ package:
   version: {{ version }}
 
 source:
-  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
-  sha256: 312cf39153a8736c617d45ce8b6ad6cd2107de121df91c455b10ce6bba7a39b2
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: 1505cc4cb248af42cb6285a65c9c2086ee9e7e574078ee60933d5d7fa86fb004
 
 build:
   number: 0
   skip: true  # [(not win) or py<39]
-  script: 
+  script:
     - {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
     - cargo-bundle-licenses --format yaml --output "{{ SRC_DIR }}\THIRDPARTY.yml"
 
@@ -38,11 +38,10 @@ test:
   commands:
     - pip check
 
-
 about:
   home: https://github.com/spyder-ide/pywinpty
   license: MIT
-  license_file: 
+  license_file:
     - LICENSE.txt
     - THIRDPARTY.yml
   license_family: MIT
