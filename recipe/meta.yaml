@@ -39,7 +39,7 @@ test:
     - pip check
 
 about:
-  home: https://github.com/spyder-ide/pywinpty
+  home: https://github.com/andfoy/pywinpty
   license: MIT
   license_file:
     - LICENSE.txt
@@ -51,8 +51,8 @@ about:
     receive input and print outputs via console input and output pipes.
     PyWinpty supports both the native ConPTY interface and the previous,
     fallback winpty library.
-  doc_url: https://github.com/spyder-ide/pywinpty
-  dev_url: https://github.com/spyder-ide/pywinpty
+  doc_url: https://github.com/andfoy/pywinpty
+  dev_url: https://github.com/andfoy/pywinpty
 
 extra:
   recipe-maintainers:
