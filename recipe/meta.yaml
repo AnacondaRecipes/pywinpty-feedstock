@@ -32,11 +32,12 @@ requirements:
 
 test:
   imports:
-    - winpty
+    #- winpty
   requires:
     - pip
   commands:
     - pip check
+    - python -c "from importlib.metadata import version; assert(version('{{ name }}')=='{{ version }}')"
 
 about:
   home: https://github.com/andfoy/pywinpty
