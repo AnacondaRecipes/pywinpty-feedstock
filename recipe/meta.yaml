@@ -13,19 +13,21 @@ build:
   number: 0
   skip: true  # [(not win) or py<39]
   script:
-    - {{ PYTHON }} -m pip install . -vv
-    # debug
+    # Try building with Maturin directly
+    - maturin build --release --interpreter {{ PYTHON }}
+    - echo "Checking for built wheels:"
+    - dir target\wheels
+    # Install the built wheel
+    - for /f %%i in ('dir /b target\wheels\*.whl') do {{ PYTHON }} -m pip install "target\wheels\%%i" --no-deps
+    # Debug: Check what was installed
     - {{ PYTHON }} -c "import pywinpty; print('pywinpty location:', pywinpty.__file__)"
     - {{ PYTHON }} -c "import pywinpty; import os; print('pywinpty dir contents:'); [print(f) for f in os.listdir(os.path.dirname(pywinpty.__file__))]"
     - echo "Checking build env site-packages:"
     - dir "{{ SP_DIR }}" | findstr pywinpty
-    - echo "Checking conda prefix before copy:"
-    - dir "{{ PREFIX }}\Lib\site-packages" | findstr pywinpty || echo "No pywinpty found in prefix yet"
-    # copy files to conda prefix
+    # Copy to conda prefix
     - {{ PYTHON }} -c "import pywinpty, shutil, os; src=os.path.dirname(pywinpty.__file__); dest=os.path.join(r'{{ PREFIX }}', 'Lib', 'site-packages', 'pywinpty'); print(f'Copying from {src} to {dest}'); shutil.copytree(src, dest, dirs_exist_ok=True)"
-    - echo "Checking conda prefix after copy:"
+    - echo "Verifying copy to prefix:"
     - dir "{{ PREFIX }}\Lib\site-packages" | findstr pywinpty
-    - {{ PYTHON }} -c "import os; print('All files in prefix site-packages:'); [print(f) for f in os.listdir(r'{{ PREFIX }}\Lib\site-packages') if 'pywinpty' in f.lower()]"
     - cargo-bundle-licenses --format yaml --output "{{ SRC_DIR }}\THIRDPARTY.yml"
 
 requirements:
