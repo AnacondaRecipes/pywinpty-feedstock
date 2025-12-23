@@ -13,13 +13,10 @@ build:
   number: 0
   skip: true  # [(not win) or py<39]
   script:
-    # Try using existing winpty
-    - set WINPTY_LIBRARY=%PREFIX%\Library\lib\winpty.lib
-    - set WINPTY_INCLUDE=%PREFIX%\Library\include
-    - set WINPTY_STATIC=1
-    - set WINPTY_RS_SYSTEM=1
-    - {{ PYTHON }} -m pip wheel . --no-build-isolation --no-deps --wheel-dir dist
-    - {{ PYTHON }} -m pip install --find-links dist --no-deps --no-build-isolation {{ name }}
+    - set WINPTY_ROOT=%LIBRARY_PREFIX%  # [win]
+    - set WINPTY_INCLUDE_DIR=%LIBRARY_INC%  # [win]
+    - set WINPTY_LIB_DIR=%LIBRARY_LIB%  # [win]
+    - {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
     - cargo-bundle-licenses --format yaml --output "{{ SRC_DIR }}\THIRDPARTY.yml"
 
 requirements:
@@ -37,14 +34,13 @@ requirements:
     - {{ pin_compatible('winpty') }}
 
 test:
-  #imports:
+  imports:
     #- winpty
-  #requires:
-  #  - pip
+  requires:
+    - pip
   commands:
-    #- pip check
-    #- python -c "from importlib.metadata import version; assert(version('{{ name }}')=='{{ version }}')"
-    - python -c "import pywinpty; print('Import successful')"
+    - pip check
+    - python -c "from importlib.metadata import version; assert(version('{{ name }}')=='{{ version }}')"
 
 about:
   home: https://github.com/andfoy/pywinpty
