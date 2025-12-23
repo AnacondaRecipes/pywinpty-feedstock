@@ -13,8 +13,13 @@ build:
   number: 0
   skip: true  # [(not win) or py<39]
   script:
-    - {{ PYTHON }} -m pip install . -vv
+    #- {{ PYTHON }} -m pip install . -vv
+    #- cargo-bundle-licenses --format yaml --output "{{ SRC_DIR }}\THIRDPARTY.yml"
+    - {{ PYTHON }} -c "import sys; print('Python path:', sys.path)"
+    - {{ PYTHON }} -c "import pywinpty; print('Module location:', pywinpty.__file__)"
     - cargo-bundle-licenses --format yaml --output "{{ SRC_DIR }}\THIRDPARTY.yml"
+    - echo "Checking what was installed:"
+    - {{ PYTHON }} -m pip list
 
 requirements:
   build:
