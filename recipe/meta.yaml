@@ -13,21 +13,21 @@ build:
   number: 0
   skip: true  # [(not win) or py<39]
   script:
-    - {{ PYTHON }} -m pip install . -vv --no-build-isolation
+    - {{ PYTHON }} -m pip install . -vv
     # debug
-    - python -c "import pywinpty; print('pywinpty location:', pywinpty.__file__)"
-    - python -c "import pywinpty; import os; print('pywinpty dir contents:'); [print(f) for f in os.listdir(os.path.dirname(pywinpty.__file__))]"
+    - {{ PYTHON }} -c "import pywinpty; print('pywinpty location:', pywinpty.__file__)"
+    - {{ PYTHON }} -c "import pywinpty; import os; print('pywinpty dir contents:'); [print(f) for f in os.listdir(os.path.dirname(pywinpty.__file__))]"
     - echo "Checking build env site-packages:"
     - dir "{{ SP_DIR }}" | findstr pywinpty
     - echo "Checking conda prefix before copy:"
     - dir "{{ PREFIX }}\Lib\site-packages" | findstr pywinpty || echo "No pywinpty found in prefix yet"
     # copy files to conda prefix
-    - python -c "import pywinpty, shutil, os; src=os.path.dirname(pywinpty.__file__); dest=os.path.join('{{ PREFIX }}', 'Lib', 'site-packages', 'pywinpty'); print(f'Copying from {src} to {dest}'); shutil.copytree(src, dest, dirs_exist_ok=True)"
+    - {{ PYTHON }} -c "import pywinpty, shutil, os; src=os.path.dirname(pywinpty.__file__); dest=os.path.join(r'{{ PREFIX }}', 'Lib', 'site-packages', 'pywinpty'); print(f'Copying from {src} to {dest}'); shutil.copytree(src, dest, dirs_exist_ok=True)"
     - echo "Checking conda prefix after copy:"
     - dir "{{ PREFIX }}\Lib\site-packages" | findstr pywinpty
-    - python -c "import os; print('All files in prefix site-packages:'); [print(f) for f in os.listdir('{{ PREFIX }}\\Lib\\site-packages') if 'pywinpty' in f.lower()]"
+    - {{ PYTHON }} -c "import os; print('All files in prefix site-packages:'); [print(f) for f in os.listdir(r'{{ PREFIX }}\Lib\site-packages') if 'pywinpty' in f.lower()]"
     - cargo-bundle-licenses --format yaml --output "{{ SRC_DIR }}\THIRDPARTY.yml"
-    
+
 requirements:
   build:
     - {{ compiler('rust') }}
