@@ -13,10 +13,11 @@ build:
   number: 0
   skip: true  # [(not win) or py<39]
   script:
-    - set WINPTY_ROOT=%LIBRARY_PREFIX%  # [win]
-    - set WINPTY_INCLUDE_DIR=%LIBRARY_INC%  # [win]
-    - set WINPTY_LIB_DIR=%LIBRARY_LIB%  # [win]
+    - set WINPTY_ROOT=%LIBRARY_PREFIX%
+    - set WINPTY_INCLUDE_DIR=%LIBRARY_INC%
+    - set WINPTY_LIB_DIR=%LIBRARY_LIB%
     - {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+    - if errorlevel 1 exit 1
     - cargo-bundle-licenses --format yaml --output "{{ SRC_DIR }}\THIRDPARTY.yml"
 
 requirements:
