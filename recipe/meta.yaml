@@ -16,7 +16,7 @@ build:
     - set WINPTY_ROOT=%LIBRARY_PREFIX%
     - set WINPTY_INCLUDE_DIR=%LIBRARY_INC%
     - set WINPTY_LIB_DIR=%LIBRARY_LIB%
-    - {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+    - set "PATH=%LIBRARY_BIN%;%PATH%" && set "LIB=%LIBRARY_LIB%;%LIB%" && {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
     - if errorlevel 1 exit 1
     - cargo-bundle-licenses --format yaml --output "{{ SRC_DIR }}\THIRDPARTY.yml"
 
