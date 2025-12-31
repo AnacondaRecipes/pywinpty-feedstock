@@ -1,24 +1,26 @@
 @echo on
 
-REM Create a temp dir without spaces
-set WINPTY_TEMP=%SRC_DIR%\winpty_temp
-mkdir "%WINPTY_TEMP%"
+REM Set environment
+set "PATH=%LIBRARY_BIN%;%PATH%"
+set "LIB=%LIBRARY_LIB%;%LIB%"
 
-REM Copy winpty files there
-copy "%LIBRARY_BIN%\winpty-agent.exe" "%WINPTY_TEMP%\"
-copy "%LIBRARY_BIN%\winpty.dll" "%WINPTY_TEMP%\"
-copy "%LIBRARY_LIB%\winpty.lib" "%WINPTY_TEMP%\"
+REM First, trigger cargo to download dependencies
+echo Downloading dependencies...
+%PYTHON% -c "import subprocess; subprocess.run(['cargo', 'fetch', '--manifest-path=Cargo.toml'], cwd=r'%CD%')"
 
-REM Add to PATH at the front
-set "PATH=%WINPTY_TEMP%;%PATH%"
-set "LIB=%WINPTY_TEMP%;%LIB%"
+REM Now find and patch the winpty-rs build.rs
+echo Patching winpty-rs build.rs...
+for /r "%USERPROFILE%\.cargo\registry\src" %%f in (winpty-rs-1.0.4\build.rs) do (
+    if exist "%%f" (
+        echo Found build.rs at %%f
+        powershell -Command "$content = Get-Content '%%f' -Raw; $content = $content -replace 'panic!\(\"NuGet is required to build winpty-rs\"\);', 'println!(\"cargo:rustc-link-search=native=%LIBRARY_LIB:\=\\%\"); println!(\"cargo:rustc-link-lib=winpty\");'; Set-Content '%%f' $content"
+        echo Patched successfully
+    )
+)
 
-REM Build
+REM Now build
 %PYTHON% -m pip install . -vv --no-deps --no-build-isolation
 if errorlevel 1 exit 1
-
-REM Cleanup
-rmdir /s /q "%WINPTY_TEMP%"
 
 REM Generate license info
 cargo-bundle-licenses --format yaml --output "%SRC_DIR%\THIRDPARTY.yml"
