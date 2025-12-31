@@ -4,22 +4,13 @@ REM Set environment
 set "PATH=%LIBRARY_BIN%;%PATH%"
 set "LIB=%LIBRARY_LIB%;%LIB%"
 
-REM Download winpty-rs source
-cargo download winpty-rs==1.0.4 --extract --output winpty-rs-local
+REM Start the patcher in background
+start /B %PYTHON% "%RECIPE_DIR%\patch_winpty.py"
 
-REM Patch the build.rs
-powershell -Command ^
-  "$file = 'winpty-rs-local\winpty-rs-1.0.4\build.rs'; ^
-   $content = Get-Content $file -Raw; ^
-   $content = $content -replace 'panic!\(\"NuGet is required to build winpty-rs\"\);', 'println!(\"cargo:rustc-link-search=native=%LIBRARY_LIB:\=\\%\"); println!(\"cargo:rustc-link-lib=winpty\");'; ^
-   Set-Content $file -Value $content -NoNewline"
+REM Give it a moment to start
+timeout /t 1 /nobreak >nul
 
-REM Add patch to Cargo.toml
-echo. >> Cargo.toml
-echo [patch.crates-io] >> Cargo.toml
-echo winpty-rs = { path = "winpty-rs-local/winpty-rs-1.0.4" } >> Cargo.toml
-
-REM Build
+REM Build (this will trigger cargo to download winpty-rs, then the patcher will fix it)
 %PYTHON% -m pip install . -vv --no-deps --no-build-isolation
 if errorlevel 1 exit 1
 
