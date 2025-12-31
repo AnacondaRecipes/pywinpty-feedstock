@@ -29,10 +29,11 @@ def patch_build_rs():
                         content = f.read()
                     
                     if 'panic!("NuGet is required' in content:
-                        # Replace the panic with link directives
+                        # Replace the panic with link directives AND set the conpty_local feature
                         new_content = content.replace(
                             'panic!("NuGet is required to build winpty-rs");',
-                            f'println!("cargo:rustc-link-search=native={lib_path}");\n'
+                            f'println!("cargo:rustc-cfg=feature=\\"conpty_local\\"");\n'
+                            f'            println!("cargo:rustc-link-search=native={lib_path}");\n'
                             f'            println!("cargo:rustc-link-lib=winpty");'
                         )
                         
