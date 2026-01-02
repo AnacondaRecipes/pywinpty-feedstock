@@ -1,0 +1,13 @@
+diff --git a/build.rs b/build.rs
+index 0e509b5..86b72c2 100644
+--- a/build.rs
++++ b/build.rs
+@@ -16,6 +16,8 @@ fn main() {
+     let manifest_dir = Path::new(&manifest_dir_str);
+     let package_dir = manifest_dir.join("winpty");
+ 
++    return; // Skip ConPTY download and use only WinPTY with conda-provided libraries
++
+     let mut binaries_found = true;
+     for bin_name in ["conpty.dll", "OpenConsole.exe"] {
+         let bin_path = package_dir.join(bin_name);
