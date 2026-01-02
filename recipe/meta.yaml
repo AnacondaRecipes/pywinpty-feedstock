@@ -11,6 +11,7 @@ source:
   patches:
     #- skip-pywinpty-nuget.patch
     - skip_conpty.patch
+    - skip-pywinpty-nuget.patch
 
 build:
   number: 0
