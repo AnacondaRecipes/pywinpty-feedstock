@@ -10,12 +10,13 @@ source:
   sha256: 1505cc4cb248af42cb6285a65c9c2086ee9e7e574078ee60933d5d7fa86fb004
   patches:
     #- skip-pywinpty-nuget.patch
-    - skip_conpty.patch
-    - skip-pywinpty-nuget.patch
+    #- skip_conpty.patch
+    #- skip-pywinpty-nuget.patch
 
 build:
   number: 0
   skip: true  # [(not win) or py<39]
+  script: {{ PYTHON }} -m pip install --only-binary=:all: pywinpty=={{ version }} -vv
   #script:
   #  #- set WINPTY_ROOT=%LIBRARY_PREFIX%
   #  #- set WINPTY_INCLUDE_DIR=%LIBRARY_INC%
@@ -44,7 +45,7 @@ requirements:
 
 test:
   imports:
-    #- winpty
+    - winpty
   requires:
     - pip
   commands:
