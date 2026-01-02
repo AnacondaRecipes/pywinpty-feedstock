@@ -26,14 +26,18 @@ def patch_build_rs():
                     with open(filepath, 'r', encoding='utf-8') as f:
                         content = f.read()
                     
-                    if 'panic!("NuGet is required' in content:
+                    # Only patch if not already patched
+                    if 'panic!("NuGet is required' in content and '// PATCHED' not in content:
+                        # Disable ConPTY feature entirely
                         new_content = content.replace(
-                            'println!("cargo:rustc-cfg=feature=\\"conpty\\"");',
-                            '// println!("cargo:rustc-cfg=feature=\\"conpty\\""); // Disabled - use only WinPTY'
+                            '            println!("cargo:rustc-cfg=feature=\\"conpty\\"");',
+                            '            // println!("cargo:rustc-cfg=feature=\\"conpty\\""); // PATCHED: Disabled ConPTY'
                         )
+                        
+                        # Also replace the panic
                         new_content = new_content.replace(
                             'panic!("NuGet is required to build winpty-rs");',
-                            f'// Skip NuGet - use only conda winpty (WinPTY backend)\n'
+                            f'// PATCHED: Skip NuGet - use only WinPTY\n'
                             f'            println!("cargo:rustc-link-search=native={lib_path}");\n'
                             f'            println!("cargo:rustc-link-lib=winpty");'
                         )
@@ -41,7 +45,7 @@ def patch_build_rs():
                         with open(filepath, 'w', encoding='utf-8') as f:
                             f.write(new_content)
                         
-                        print("Successfully patched winpty-rs build.rs - ConPTY disabled, WinPTY only!")
+                        print("Successfully patched winpty-rs build.rs - ConPTY disabled!")
                         return True
         
         time.sleep(0.5)
