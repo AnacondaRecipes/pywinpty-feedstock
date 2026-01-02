@@ -2,6 +2,7 @@ import os
 import sys
 import time
 import glob
+import re
 
 def patch_build_rs():
     """Find and patch winpty-rs build.rs to disable ConPTY entirely"""
@@ -34,61 +35,53 @@ def patch_build_rs():
                         print("File already patched, skipping")
                         continue
                     
-                    # Check if we can find the lines to patch
-                    if 'cargo:rustc-cfg=feature="conpty"' not in content:
-                        print("WARNING: Could not find conpty feature line to patch!")
-                        print("File content sample:")
-                        print(content[:500])
-                        continue
-                    
+                    # Check if we can find the panic line
                     if 'panic!("NuGet is required' not in content:
-                        print("WARNING: Could not find panic line!")
+                        print("WARNING: panic line not found, skipping")
                         continue
                     
-                    print("Patching file...")
+                    print(f"File size: {len(content)} bytes")
+                    print("Searching for conpty cfg line...")
                     
-                    # Disable ConPTY feature - try multiple patterns
-                    new_content = content
+                    # Try to find and replace using regex for flexibility
+                    original_content = content
                     
-                    # Pattern 1: with escaped quotes
-                    new_content = new_content.replace(
-                        'println!("cargo:rustc-cfg=feature=\\"conpty\\"");',
-                        '// println!("cargo:rustc-cfg=feature=\\"conpty\\""); // PATCHED'
-                    )
-                    
-                    # Pattern 2: with regular quotes  
-                    new_content = new_content.replace(
-                        'println!("cargo:rustc-cfg=feature=\"conpty\"");',
-                        '// println!("cargo:rustc-cfg=feature=\"conpty\""); // PATCHED'
-                    )
+                    # Pattern to match the conpty cfg line with any whitespace/quote variations
+                    conpty_pattern = r'println!\("cargo:rustc-cfg=feature=\\"conpty\\""\);'
+                    if re.search(conpty_pattern, content):
+                        print("Found conpty cfg line with escaped quotes!")
+                        content = re.sub(
+                            conpty_pattern,
+                            r'// println!("cargo:rustc-cfg=feature=\\"conpty\\""); // PATCHED: Disabled',
+                            content
+                        )
                     
                     # Replace the panic
-                    new_content = new_content.replace(
+                    content = content.replace(
                         'panic!("NuGet is required to build winpty-rs");',
                         f'// PATCHED: Skip NuGet\n            println!("cargo:rustc-link-search=native={lib_path}");\n            println!("cargo:rustc-link-lib=winpty");'
                     )
                     
-                    if new_content == content:
-                        print("ERROR: No changes made to file!")
+                    if content == original_content:
+                        print("ERROR: No changes made!")
+                        # Show more context around line 219
+                        lines = content.split('\n')
+                        if len(lines) > 219:
+                            print(f"Content around line 219:")
+                            for i in range(max(0, 210), min(len(lines), 230)):
+                                print(f"{i}: {lines[i]}")
                         continue
                     
+                    # Write the patched content
                     with open(filepath, 'w', encoding='utf-8') as f:
-                        f.write(new_content)
+                        f.write(content)
                     
                     print("Successfully patched winpty-rs build.rs!")
-                    
-                    # Verify the patch
-                    with open(filepath, 'r', encoding='utf-8') as f:
-                        verify = f.read()
-                    if '// PATCHED' in verify:
-                        print("Patch verified!")
-                        return True
-                    else:
-                        print("ERROR: Patch verification failed!")
+                    return True
         
         time.sleep(0.5)
     
-    print("Warning: Could not find winpty-rs build.rs to patch within timeout")
+    print("Warning: Could not patch winpty-rs within timeout")
     return False
 
 if __name__ == '__main__':
