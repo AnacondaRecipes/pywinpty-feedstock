@@ -27,10 +27,11 @@ def patch_build_rs():
                         content = f.read()
                     
                     if 'panic!("NuGet is required' in content:
-                        # Replace the panic - link winpty and skip setting conpty features
+                        # Replace panic and enable conpty_local feature to allow compilation
                         new_content = content.replace(
                             'panic!("NuGet is required to build winpty-rs");',
-                            f'// Skip NuGet - use conda winpty\n'
+                            f'// Skip NuGet - use conda winpty and enable conpty_local for compilation\n'
+                            f'            println!("cargo:rustc-cfg=feature=\\"conpty_local\\"");\n'
                             f'            println!("cargo:rustc-link-search=native={lib_path}");\n'
                             f'            println!("cargo:rustc-link-lib=winpty");'
                         )
