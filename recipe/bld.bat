@@ -2,7 +2,7 @@
 
 REM fetch ConPTY binaries (vendored) and extract it's contents
 REM CONPTY_VERSION = 1.18.240821001
-curl -L -o conpty.nupkg https://www.nuget.org/api/v2/package/Microsoft.Windows.Console.ConPTY/1.18.240821001
+curl -L -o conpty.nupkg https://github.com/microsoft/terminal/releases/download/v1.23.13503.0/Microsoft.Windows.Console.ConPTY.1.23.251216003.nupkg
 if errorlevel 1 (
     echo ERROR: Download ConPTY package failed
     exit 1
