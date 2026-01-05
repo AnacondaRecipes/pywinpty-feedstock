@@ -25,6 +25,7 @@ requirements:
     - {{ compiler('rust') }}
     - {{ compiler('cxx') }}
     - cargo-bundle-licenses
+    - powershell
   host:
     - python
     - pip
