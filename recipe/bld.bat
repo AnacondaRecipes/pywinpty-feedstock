@@ -3,7 +3,13 @@
 REM fetch ConPTY binaries (vendored) and extract it's contents
 REM CONPTY_VERSION = 1.18.240821001
 curl -L -o conpty.nupkg https://www.nuget.org/api/v2/package/Microsoft.Windows.Console.ConPTY/1.18.240821001
+if errorlevel 1 (
+    echo ERROR: Download ConPTY package failed
+    exit 1
+)
 powershell -Command "Expand-Archive -Path conpty.nupkg -DestinationPath conpty_extracted -Force"
+REM debuggung list contents:
+dir conpty_extracted /s /b
 
 REM Copy binaries and lib files to target folder
 copy conpty_extracted\build\native\runtimes\x64\OpenConsole.exe %LIBRARY_BIN%\
