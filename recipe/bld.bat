@@ -7,8 +7,20 @@ if errorlevel 1 (
     echo ERROR: Download ConPTY package failed
     exit 1
 )
+if not exist conpty.nupkg (
+    echo ERROR: conpty.nupkg was not created
+    exit 1
+)
+echo Successfully downloaded ConPTY
+
 powershell -Command "Expand-Archive -Path conpty.nupkg -DestinationPath conpty_extracted -Force"
+if errorlevel 1 (
+    echo ERROR: Failed to unpack conpty.nuget
+    exit 1
+)
+
 REM debuggung list contents:
+echo Logging extracted contents
 dir conpty_extracted /s /b
 
 REM Copy binaries and lib files to target folder
