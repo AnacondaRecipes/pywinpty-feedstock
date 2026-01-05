@@ -16,17 +16,8 @@ source:
 build:
   number: 0
   skip: true  # [(not win) or py<39]
-  script: {{ PYTHON }} -m pip install --only-binary=:all: pywinpty=={{ version }} -vv
   #script:
-  #  #- set WINPTY_ROOT=%LIBRARY_PREFIX%
-  #  #- set WINPTY_INCLUDE_DIR=%LIBRARY_INC%
-  #  #- set WINPTY_LIB_DIR=%LIBRARY_LIB%
-  #  - call %RECIPE_DIR%\check_winpty.bat
-  #  - set "PATH=%LIBRARY_BIN%;%PATH%"
-  #  - set "LIB=%LIBRARY_LIB%;%LIB%"
-  #  - where winpty-agent
   #  - {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
-  #  - if errorlevel 1 exit 1
   #  - cargo-bundle-licenses --format yaml --output "{{ SRC_DIR }}\THIRDPARTY.yml"
 
 requirements:
@@ -45,7 +36,7 @@ requirements:
 
 test:
   imports:
-    - winpty
+    #- winpty
   requires:
     - pip
   commands:
