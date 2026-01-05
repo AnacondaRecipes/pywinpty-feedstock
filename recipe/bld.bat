@@ -28,6 +28,7 @@ echo Logging extracted contents
 dir conpty_extracted /s /b
 
 REM Copy binaries and lib files to target folder
+echo Copying required files
 copy conpty_extracted\build\native\runtimes\x64\OpenConsole.exe %LIBRARY_BIN%\
 copy conpty_extracted\runtimes\win-x64\native\conpty.dll %LIBRARY_BIN%\
 copy conpty_extracted\runtimes\win-x64\lib\uap10.0\conpty.lib %LIBRARY_LIB%\
@@ -39,6 +40,7 @@ if not exist %LIBRARY_LIB%\conpty.lib exit 1
 echo ConPTY was successfully installed
 
 REM Build pywinpty
+echo installing winpty:
 %PYTHON% -m pip install . -vv --no-deps --no-build-isolation
 if errorlevel 1 exit 1
 
