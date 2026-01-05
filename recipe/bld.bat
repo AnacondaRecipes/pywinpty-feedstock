@@ -13,11 +13,15 @@ if not exist conpty.nupkg (
 )
 echo Successfully downloaded ConPTY
 
-powershell -Command "Expand-Archive -Path conpty.nupkg -DestinationPath conpty_extracted -Force"
+mkdir conpty_extracted
+REM powershell -Command "Expand-Archive -Path conpty.nupkg -DestinationPath conpty_extracted -Force"
+cd conpty_extracted
+tar -xf ../conpty.nupkg
 if errorlevel 1 (
     echo ERROR: Failed to unpack conpty.nuget
     exit 1
 )
+cd ..
 
 REM debuggung list contents:
 echo Logging extracted contents
