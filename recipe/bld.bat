@@ -55,6 +55,14 @@ if not exist %LIBRARY_LIB%\conpty.lib exit 1
 echo ConPTY was successfully installed
 echo.
 
+REM Set environment
+set "PATH=%LIBRARY_BIN%;%PATH%"
+set "LIB=%LIBRARY_LIB%;%LIB%"
+
+REM Start the patcher for winpty-rs
+start /B %PYTHON% "%RECIPE_DIR%\patch_winpty.py"
+timeout /t 1 /nobreak >nul
+
 REM Build pywinpty
 echo installing winpty:
 %PYTHON% -m pip install . -vv --no-deps --no-build-isolation
