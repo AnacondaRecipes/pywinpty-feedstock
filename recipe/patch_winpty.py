@@ -5,7 +5,7 @@ import glob
 import re
 
 def patch_build_rs():
-    """Find and patch winpty-rs build.rs"""
+    """Find and patch winpty-rs build.rs to disable ConPTY entirely"""
     
     max_wait = 60
     start_time = time.time()
@@ -38,7 +38,7 @@ def patch_build_rs():
                     print(f"\nFound file: {filepath}")
                     print(f"File size: {len(content)} chars")
                     
-                    # Find line numbers for debugging
+                    # Find all lines with conpty feature
                     lines = content.split('\n')
                     for i, line in enumerate(lines, 1):
                         if 'rustc-cfg=feature' in line and 'conpty' in line:
@@ -46,39 +46,44 @@ def patch_build_rs():
                         if 'NuGet is required' in line:
                             print(f"Line {i}: {line.strip()}")
                     
-                    # Do the replacement - search for any variation
+                    # Disable ALL conpty feature settings using regex
                     modified = False
                     
-                    # Try multiple patterns for the conpty line
-                    patterns_to_try = [
-                        (r'println!\("cargo:rustc-cfg=feature=\\"conpty\\""\);', 
-                         r'// println!("cargo:rustc-cfg=feature=\\"conpty\\""); // PATCHED'),
-                        (r"println!\('cargo:rustc-cfg=feature=\"conpty\"'\);",
-                         r"// println!('cargo:rustc-cfg=feature=\"conpty\"'); // PATCHED"),
-                        # Raw string search
-                        ('println!("cargo:rustc-cfg=feature=\\"conpty\\"");',
-                         '// println!("cargo:rustc-cfg=feature=\\"conpty\\""); // PATCHED'),
-                    ]
+                    # Replace ALL occurrences of the conpty cfg line
+                    pattern = r'println!\("cargo:rustc-cfg=feature=\\"conpty\\""\);'
+                    matches = len(re.findall(pattern, content))
+                    if matches > 0:
+                        print(f"Found {matches} conpty feature line(s)")
+                        content = re.sub(
+                            pattern,
+                            r'// println!("cargo:rustc-cfg=feature=\\"conpty\\""); // PATCHED: Disabled ConPTY',
+                            content
+                        )
+                        modified = True
                     
-                    for pattern, replacement in patterns_to_try:
-                        if re.search(pattern, content):
-                            print(f"Matched pattern: {pattern}")
-                            content = re.sub(pattern, replacement, content)
-                            modified = True
-                            break
+                    # Also disable conpty_local if it appears
+                    pattern_local = r'println!\("cargo:rustc-cfg=feature=\\"conpty_local\\""\);'
+                    if re.search(pattern_local, content):
+                        print(f"Found conpty_local feature line")
+                        content = re.sub(
+                            pattern_local,
+                            r'// println!("cargo:rustc-cfg=feature=\\"conpty_local\\""); // PATCHED: Disabled',
+                            content
+                        )
+                        modified = True
                     
                     # Replace panic
                     if 'panic!("NuGet is required to build winpty-rs");' in content:
                         content = content.replace(
                             'panic!("NuGet is required to build winpty-rs");',
-                            f'// PATCHED\n            println!("cargo:rustc-link-search=native={lib_path}");\n            println!("cargo:rustc-link-lib=winpty");'
+                            f'// PATCHED: Skip NuGet\n            println!("cargo:rustc-link-search=native={lib_path}");\n            println!("cargo:rustc-link-lib=winpty");'
                         )
                         modified = True
                     
                     if modified:
                         with open(filepath, 'w', encoding='utf-8') as f:
                             f.write(content)
-                        print("✓ Patched successfully!")
+                        print("✓ Patched successfully - ConPTY fully disabled!")
                         return True
                     else:
                         print("✗ No modifications made")
