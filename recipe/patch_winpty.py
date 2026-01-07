@@ -4,17 +4,17 @@ import time
 import glob
 import re
 
-def patch_build_rs():
-    """Find and patch winpty-rs build.rs to disable ConPTY entirely"""
-    
-    max_wait = 60
-    start_time = time.time()
+def patch_build_rs_continuous():
+    """Continuously patch winpty-rs build.rs whenever it appears"""
     
     lib_path = os.environ.get('LIBRARY_LIB', '').replace('\\', '\\\\')
+    max_runtime = 600  # Run for max 10 minutes
+    start_time = time.time()
     
-    print(f"Looking for winpty-rs build.rs...")
+    print(f"Starting continuous patcher for winpty-rs...")
+    patched_files = set()
     
-    while time.time() - start_time < max_wait:
+    while time.time() - start_time < max_runtime:
         patterns = [
             os.path.join(os.environ.get('BUILD_PREFIX', ''), '.cargo.win', 'registry', 'src', '*', 'winpty-rs-1.0.4', 'build.rs'),
             os.path.join(os.environ.get('USERPROFILE', ''), '.cargo', 'registry', 'src', '*', 'winpty-rs-1.0.4', 'build.rs'),
@@ -23,51 +23,47 @@ def patch_build_rs():
         for pattern in patterns:
             files = glob.glob(pattern)
             for filepath in files:
+                # Skip if we already patched this exact file
+                if filepath in patched_files:
+                    continue
+                    
                 if os.path.exists(filepath):
                     with open(filepath, 'r', encoding='utf-8') as f:
                         content = f.read()
                     
                     # Skip if already patched
                     if '// PATCHED' in content:
+                        patched_files.add(filepath)
                         continue
                     
-                    # Must have the panic line
+                    # Check if needs patching
                     if 'panic!("NuGet is required' not in content:
                         continue
                     
-                    print(f"\nFound file: {filepath}")
-                    print(f"File size: {len(content)} chars")
+                    print(f"\n[{time.strftime('%H:%M:%S')}] Found unpatched file: {filepath}")
                     
-                    # Find all lines with conpty feature
-                    lines = content.split('\n')
-                    for i, line in enumerate(lines, 1):
-                        if 'rustc-cfg=feature' in line and 'conpty' in line:
-                            print(f"Line {i}: {line.strip()}")
-                        if 'NuGet is required' in line:
-                            print(f"Line {i}: {line.strip()}")
-                    
-                    # Disable ALL conpty feature settings using regex
+                    # Disable ALL conpty features
                     modified = False
                     
-                    # Replace ALL occurrences of the conpty cfg line
-                    pattern = r'println!\("cargo:rustc-cfg=feature=\\"conpty\\""\);'
-                    matches = len(re.findall(pattern, content))
+                    # Replace ALL occurrences of conpty cfg
+                    pattern_conpty = r'println!\("cargo:rustc-cfg=feature=\\"conpty\\""\);'
+                    matches = len(re.findall(pattern_conpty, content))
                     if matches > 0:
-                        print(f"Found {matches} conpty feature line(s)")
+                        print(f"  Disabling {matches} conpty feature line(s)")
                         content = re.sub(
-                            pattern,
-                            r'// println!("cargo:rustc-cfg=feature=\\"conpty\\""); // PATCHED: Disabled ConPTY',
+                            pattern_conpty,
+                            r'// println!("cargo:rustc-cfg=feature=\\"conpty\\""); // PATCHED',
                             content
                         )
                         modified = True
                     
-                    # Also disable conpty_local if it appears
+                    # Disable conpty_local
                     pattern_local = r'println!\("cargo:rustc-cfg=feature=\\"conpty_local\\""\);'
                     if re.search(pattern_local, content):
-                        print(f"Found conpty_local feature line")
+                        print(f"  Disabling conpty_local feature")
                         content = re.sub(
                             pattern_local,
-                            r'// println!("cargo:rustc-cfg=feature=\\"conpty_local\\""); // PATCHED: Disabled',
+                            r'// println!("cargo:rustc-cfg=feature=\\"conpty_local\\""); // PATCHED',
                             content
                         )
                         modified = True
@@ -76,21 +72,20 @@ def patch_build_rs():
                     if 'panic!("NuGet is required to build winpty-rs");' in content:
                         content = content.replace(
                             'panic!("NuGet is required to build winpty-rs");',
-                            f'// PATCHED: Skip NuGet\n            println!("cargo:rustc-link-search=native={lib_path}");\n            println!("cargo:rustc-link-lib=winpty");'
+                            f'// PATCHED\n            println!("cargo:rustc-link-search=native={lib_path}");\n            println!("cargo:rustc-link-lib=winpty");'
                         )
                         modified = True
                     
                     if modified:
                         with open(filepath, 'w', encoding='utf-8') as f:
                             f.write(content)
-                        print("✓ Patched successfully - ConPTY fully disabled!")
-                        return True
-                    else:
-                        print("✗ No modifications made")
+                        patched_files.add(filepath)
+                        print("  ✓ Patched successfully!")
         
-        time.sleep(0.5)
+        time.sleep(0.3)
     
-    return False
+    print(f"\nPatcher finished. Patched {len(patched_files)} file(s) total.")
+    return len(patched_files) > 0
 
 if __name__ == '__main__':
-    patch_build_rs()
+    patch_build_rs_continuous()
