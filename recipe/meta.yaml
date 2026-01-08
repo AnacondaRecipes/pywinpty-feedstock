@@ -40,7 +40,7 @@ requirements:
 
 test:
   imports:
-    #- winpty
+    - winpty
   requires:
     - pip
   commands:
