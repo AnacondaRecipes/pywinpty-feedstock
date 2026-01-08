@@ -39,13 +39,17 @@ requirements:
     - {{ pin_compatible('winpty') }}
 
 test:
+  source_files:
+    - pywinpty-src/winpty/tests
   imports:
     - winpty
   requires:
     - pip
+    - pytest
   commands:
     - pip check
     - python -c "from importlib.metadata import version; assert(version('{{ name }}')=='{{ version }}')"
+    - pytest -vvv pywinpty-src/winpty/tests
 
 about:
   home: https://github.com/andfoy/pywinpty
