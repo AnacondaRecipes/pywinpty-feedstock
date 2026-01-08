@@ -51,7 +51,7 @@ about:
   home: https://github.com/andfoy/pywinpty
   license: MIT
   license_file:
-    - LICENSE.txt
+    - pywinpty-src/LICENSE.txt
     - THIRDPARTY.yml
   license_family: MIT
   summary: Pseudoterminals for Windows in Python
