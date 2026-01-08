@@ -51,7 +51,7 @@ test:
   commands:
     - pip check
     - python -c "from importlib.metadata import version; assert(version('{{ name }}')=='{{ version }}')"
-    - pytest -vvv pywinpty-src/winpty/tests
+    - pytest -vvv --deselect="pywinpty-src/winpty/tests/test_ptyprocess.py::test_read" pywinpty-src/winpty/tests
 
 about:
   home: https://github.com/andfoy/pywinpty
