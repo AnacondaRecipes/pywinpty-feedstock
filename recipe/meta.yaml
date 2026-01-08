@@ -12,6 +12,7 @@ source:
     patches:
       - skip-pywinpty-nuget.patch
       - use_local_winpty-rs.patch
+      - disable_conpty_tests.patch
 
   # winpty-rs: vendored in dependency
   - url: https://github.com/andfoy/winpty-rs/archive/refs/tags/v1.0.4.tar.gz
