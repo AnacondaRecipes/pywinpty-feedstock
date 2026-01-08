@@ -46,6 +46,7 @@ test:
   requires:
     - pip
     - pytest
+    - flaky
   commands:
     - pip check
     - python -c "from importlib.metadata import version; assert(version('{{ name }}')=='{{ version }}')"
