@@ -6,19 +6,23 @@ package:
   version: {{ version }}
 
 source:
-  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
-  sha256: 1505cc4cb248af42cb6285a65c9c2086ee9e7e574078ee60933d5d7fa86fb004
-  patches:
-    #- skip-pywinpty-nuget.patch
-    #- skip_conpty.patch
-    #- skip-pywinpty-nuget.patch
+  - url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+    sha256: 1505cc4cb248af42cb6285a65c9c2086ee9e7e574078ee60933d5d7fa86fb004
+    folder: pywinpty-src
+    patches:
+      - skip-pywinpty-nuget.patch
+      - use_local_winpty-rs.patch
+
+  # winpty-rs: vendored dependency
+  - url: https://github.com/andfoy/winpty-rs/archive/refs/tags/v1.0.4.tar.gz
+    sha256: 
+    folder: winpty-rs-src
+    patches:
+      - disable_conpty_backend.patch
 
 build:
   number: 0
   skip: true  # [(not win) or py<39]
-  #script:
-  #  - {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
-  #  - cargo-bundle-licenses --format yaml --output "{{ SRC_DIR }}\THIRDPARTY.yml"
 
 requirements:
   build:
