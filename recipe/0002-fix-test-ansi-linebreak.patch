@@ -53,7 +53,7 @@
 -    assert str_text in line
 +    line_clean = strip_ansi_and_breaks(line)
 +    assert str_text in line_clean
-    del pty
+     del pty
 --- a/winpty/tests/test_ptyprocess.py
 +++ b/winpty/tests/test_ptyprocess.py
 @@ -38,6 +38,11 @@ def pty_fixture(request):
