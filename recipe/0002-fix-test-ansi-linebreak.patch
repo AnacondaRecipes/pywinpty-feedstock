@@ -1,4 +1,3 @@
-# filename: recipe/0002-fix-test-ansi-linebreak.patch
 --- a/winpty/tests/test_pty.py
 +++ b/winpty/tests/test_pty.py
 @@ -1,6 +1,7 @@
@@ -33,3 +32,6 @@
 -    assert loc in readline or 'cmd' in readline
 +    readline_clean = strip_ansi_and_breaks(readline)
 +    assert loc in readline_clean or 'cmd' in readline_clean
+ 
+ 
+ def test_write(pty_fixture):
