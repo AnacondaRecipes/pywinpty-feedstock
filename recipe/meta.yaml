@@ -35,10 +35,15 @@ requirements:
 test:
   imports:
     - winpty
+  source_files:
+    - runtests.py
   requires:
     - pip
+    - pytest
+    - flaky
   commands:
     - pip check
+    - python runtests.py
 
 
 about:
