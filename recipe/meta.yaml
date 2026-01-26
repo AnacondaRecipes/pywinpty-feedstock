@@ -10,7 +10,7 @@ source:
   sha256: 312cf39153a8736c617d45ce8b6ad6cd2107de121df91c455b10ce6bba7a39b2
 
 build:
-  number: 0
+  number: 1
   skip: true  # [(not win) or py<39]
   script: 
     - {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
@@ -18,8 +18,9 @@ build:
 
 requirements:
   build:
-    - {{ compiler('rust') }}
+    - {{ stdlib('cxx') }}
     - {{ compiler('cxx') }}
+    - {{ compiler('rust') }}
     - cargo-bundle-licenses
   host:
     - python
