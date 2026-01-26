@@ -1,14 +1,14 @@
 --- a/winpty/tests/test_pty.py
 +++ b/winpty/tests/test_pty.py
-@@ -1,6 +1,7 @@
- # -*- coding: utf-8 -*-
- """winpty PTY tests."""
- import os
+@@ -2,6 +2,7 @@
+ """winpty wrapper tests."""
+ 
+ # Standard library imports
 +import re
+ import os
  import time
  
- import pytest
-@@ -64,16 +65,22 @@ def pty_fixture(request):
+@@ -57,6 +58,11 @@ def _pty_factory():
      return _pty_factory
  
  
@@ -17,10 +17,10 @@
 +    return re.sub(r'\x1b\[[0-9;?]*[a-zA-Z]|\r?\n', '', text)
 +
 +
- def test_read(pty_fixture, capsys):
-     pty = pty_fixture()
-     loc = os.getcwd()
-     readline = ''
+ # @pytest.fixture(scope='function', params=[
+ #     pytest.lazy_fixture('conpty_provider'),
+ #     pytest.lazy_fixture('winpty_provider')])
+@@ -70,10 +76,11 @@ def test_read(pty_fixture, capsys):
  
      with capsys.disabled():
          start_time = time.time()
@@ -32,7 +32,4 @@
 -    assert loc in readline or 'cmd' in readline
 +    readline_clean = strip_ansi_and_breaks(readline)
 +    assert loc in readline_clean or 'cmd' in readline_clean
- 
- 
- def test_write(pty_fixture):
- 
+     del pty
