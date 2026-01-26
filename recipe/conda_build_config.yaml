@@ -5,5 +5,5 @@
 # └─ vs_win-64 =2022.14 * is not installable because it requires
 #    └─ vs2022_win-64 =19.44.35207 *, which requires
 #       └─ vs_win-64 ==2022.14 *, which conflicts with any installable versions previously reported.
-# cxx_compiler:
+cxx_compiler:                  # [win]
   - vs2019                     # [win]
