@@ -36,12 +36,13 @@ test:
   imports:
     - winpty
   source_files:
-    - {{ SRC_DIR }}/winpty/tests
+    - winpty/tests
   requires:
     - pip
     - pytest
     - flaky
   commands:
+    - dir {{ SRC_DIR }}
     - pip check
     - pytest {{ SRC_DIR }}/winpty/tests -vv
 
