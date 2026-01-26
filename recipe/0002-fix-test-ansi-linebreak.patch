@@ -8,7 +8,7 @@
  import os
  import time
  
-@@ -57,6 +58,12 @@ def _pty_factory():
+@@ -57,6 +58,11 @@ def _pty_factory():
      return _pty_factory
  
  
@@ -20,7 +20,7 @@
  # @pytest.fixture(scope='function', params=[
  #     pytest.lazy_fixture('conpty_provider'),
  #     pytest.lazy_fixture('winpty_provider')])
-@@ -70,10 +77,11 @@ def test_read(pty_fixture, capsys):
+@@ -70,11 +77,12 @@ def test_read(pty_fixture, capsys):
  
      with capsys.disabled():
          start_time = time.time()
@@ -65,7 +65,7 @@
  @flaky(max_runs=40, min_passes=1)
  def test_read(pty_fixture):
      pty = pty_fixture()
-@@ -45,14 +50,15 @@ def test_read(pty_fixture):
+@@ -45,13 +50,14 @@ def test_read(pty_fixture):
      data = ''
      tries = 0
 -    while loc not in data and tries < 10:
@@ -82,7 +82,7 @@
      time.sleep(2)
  
  
-@@ -65,14 +71,15 @@ def test_write(pty_fixture):
+@@ -65,11 +71,12 @@ def test_write(pty_fixture):
  
      data = ''
      tries = 0
