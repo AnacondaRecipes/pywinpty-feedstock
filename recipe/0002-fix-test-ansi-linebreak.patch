@@ -35,25 +35,25 @@
  
  
 @@ -85,13 +92,14 @@ def test_write(pty_fixture):
-    pty = pty_fixture()
-    line = pty.read()
+     pty = pty_fixture()
+     line = pty.read()
  
-    str_text = 'Eggs, ham and spam ünicode'
-    # text = bytes(str_text, 'utf-8')
-    num_bytes = pty.write(str_text)
+     str_text = 'Eggs, ham and spam ünicode'
+     # text = bytes(str_text, 'utf-8')
+     num_bytes = pty.write(str_text)
  
-    line = ''
-    start_time = time.time()
+     line = ''
+     start_time = time.time()
 -    while str_text not in line:
 +    while str_text not in strip_ansi_and_breaks(line):
-        if time.time() - start_time > 5:
-          break
-      line += pty.read()
+         if time.time() - start_time > 5:
+             break
+         line += pty.read()
  
 -    assert str_text in line
 +    line_clean = strip_ansi_and_breaks(line)
 +    assert str_text in line_clean
-    del pty
+     del pty
 --- a/winpty/tests/test_ptyprocess.py
 +++ b/winpty/tests/test_ptyprocess.py
 @@ -38,6 +38,11 @@ def pty_fixture(request):
