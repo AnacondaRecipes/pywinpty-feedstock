@@ -7,3 +7,5 @@
 #       └─ vs_win-64 ==2022.14 *, which conflicts with any installable versions previously reported.
 cxx_compiler:                  # [win]
   - vs2019                     # [win]
+rust_compiler_version:
+  - 1.90.0
