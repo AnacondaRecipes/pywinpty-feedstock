@@ -8,7 +8,7 @@
  import time
  
  import pytest
-@@ -64,6 +65,11 @@ def pty_fixture(request):
+@@ -64,16 +65,22 @@ def pty_fixture(request):
      return _pty_factory
  
  
@@ -20,7 +20,7 @@
  def test_read(pty_fixture, capsys):
      pty = pty_fixture()
      loc = os.getcwd()
-@@ -71,10 +77,11 @@ def test_read(pty_fixture, capsys):
+     readline = ''
  
      with capsys.disabled():
          start_time = time.time()
@@ -35,3 +35,4 @@
  
  
  def test_write(pty_fixture):
+ 
