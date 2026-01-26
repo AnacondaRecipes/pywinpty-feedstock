@@ -1,3 +1,4 @@
+# filename: recipe/0002-fix-test-ansi-linebreak.patch
 --- a/winpty/tests/test_pty.py
 +++ b/winpty/tests/test_pty.py
 @@ -1,6 +1,7 @@
@@ -8,7 +9,7 @@
  import time
  
  import pytest
-@@ -66,6 +67,12 @@ def pty_fixture(request):
+@@ -64,6 +65,11 @@ def pty_fixture(request):
      return _pty_factory
  
  
@@ -20,7 +21,7 @@
  def test_read(pty_fixture, capsys):
      pty = pty_fixture()
      loc = os.getcwd()
-@@ -73,10 +80,11 @@ def test_read(pty_fixture, capsys):
+@@ -71,10 +77,11 @@ def test_read(pty_fixture, capsys):
  
      with capsys.disabled():
          start_time = time.time()
