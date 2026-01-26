@@ -21,7 +21,6 @@
  #     pytest.lazy_fixture('conpty_provider'),
  #     pytest.lazy_fixture('winpty_provider')])
 @@ -70,10 +76,11 @@ def test_read(pty_fixture, capsys):
- 
      with capsys.disabled():
          start_time = time.time()
 -        while loc not in readline:
@@ -33,3 +32,69 @@
 +    readline_clean = strip_ansi_and_breaks(readline)
 +    assert loc in readline_clean or 'cmd' in readline_clean
      del pty
+ 
+ 
+@@ -85,13 +92,14 @@ def test_write(pty_fixture):
+    pty = pty_fixture()
+    line = pty.read()
+ 
+    str_text = 'Eggs, ham and spam ünicode'
+    # text = bytes(str_text, 'utf-8')
+    num_bytes = pty.write(str_text)
+ 
+    line = ''
+    start_time = time.time()
+-    while str_text not in line:
++    while str_text not in strip_ansi_and_breaks(line):
+        if time.time() - start_time > 5:
+          break
+      line += pty.read()
+ 
+-    assert str_text in line
++    line_clean = strip_ansi_and_breaks(line)
++    assert str_text in line_clean
+    del pty
+--- a/winpty/tests/test_ptyprocess.py
++++ b/winpty/tests/test_ptyprocess.py
+@@ -38,6 +38,11 @@ def pty_fixture(request):
+     return _pty_factory
+ 
+ 
++def strip_ansi_and_breaks(text):
++    """Remove ANSI escape codes and line breaks that split paths."""
++    return re.sub(r'\x1b\[[0-9;?]*[a-zA-Z]|\r?\n', '', text)
++
++
+ @flaky(max_runs=40, min_passes=1)
+ def test_read(pty_fixture):
+     pty = pty_fixture()
+@@ -45,10 +50,11 @@ def test_read(pty_fixture):
+     data = ''
+     tries = 0
+-    while loc not in data and tries < 10:
++    while loc not in strip_ansi_and_breaks(data) and tries < 10:
+         try:
+             data += pty.read()
+         except EOFError:
+             pass
+         tries += 1
+-    assert loc in data
++    data_clean = strip_ansi_and_breaks(data)
++    assert loc in data_clean
+     pty.terminate()
+     time.sleep(2)
+ 
+@@ -60,10 +66,11 @@ def test_write(pty_fixture):
+     data = ''
+     tries = 0
+-    while text not in data and tries < 10:
++    while text not in strip_ansi_and_breaks(data) and tries < 10:
+         try:
+             data += pty.read()
+         except EOFError:
+             pass
+         tries += 1
+-    assert text in data
++    data_clean = strip_ansi_and_breaks(data)
++    assert text in data_clean
+     pty.terminate()
