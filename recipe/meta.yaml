@@ -19,7 +19,7 @@ build:
 requirements:
   build:
     - {{ compiler('cxx') }}
-    - {{ compiler('rust-gnu') }}
+    - {{ compiler('rust') }}
     - cargo-bundle-licenses
   host:
     - python
