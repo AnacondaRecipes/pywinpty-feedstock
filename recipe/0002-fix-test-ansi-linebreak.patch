@@ -34,11 +34,11 @@
      del pty
  
  
-@@ -85,16 +92,17 @@ def test_write(pty_fixture):
-     pty = pty_fixture()
-     line = pty.read()
+@@ -87,16 +94,17 @@ def test_write(pty_fixture):
+    pty = pty_fixture()
+    line = pty.read()
  
-     str_text = 'Eggs, ham and spam ünicode'
+    str_text = 'Eggs, ham and spam ünicode'
      # text = bytes(str_text, 'utf-8')
      num_bytes = pty.write(str_text)
  
