@@ -18,7 +18,7 @@ build:
 
 requirements:
   build:
-    - {{ stdlib('cxx') }}
+    - {{ stdlib('c') }}
     - {{ compiler('cxx') }}
     - {{ compiler('rust') }}
     - cargo-bundle-licenses
