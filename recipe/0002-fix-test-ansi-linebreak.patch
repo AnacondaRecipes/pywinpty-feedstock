@@ -34,7 +34,7 @@
      del pty
  
  
-@@ -85,13 +92,14 @@ def test_write(pty_fixture):
+@@ -85,16 +92,17 @@ def test_write(pty_fixture):
      pty = pty_fixture()
      line = pty.read()
  
