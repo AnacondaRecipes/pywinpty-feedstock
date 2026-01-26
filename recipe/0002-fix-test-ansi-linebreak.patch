@@ -8,7 +8,7 @@
  import os
  import time
  
-@@ -57,6 +58,11 @@ def _pty_factory():
+@@ -57,6 +58,12 @@ def _pty_factory():
      return _pty_factory
  
  
@@ -20,7 +20,8 @@
  # @pytest.fixture(scope='function', params=[
  #     pytest.lazy_fixture('conpty_provider'),
  #     pytest.lazy_fixture('winpty_provider')])
-@@ -70,10 +76,11 @@ def test_read(pty_fixture, capsys):
+@@ -70,10 +77,11 @@ def test_read(pty_fixture, capsys):
+ 
      with capsys.disabled():
          start_time = time.time()
 -        while loc not in readline:
@@ -34,13 +35,7 @@
      del pty
  
  
-@@ -87,16 +94,17 @@ def test_write(pty_fixture):
-    pty = pty_fixture()
-    line = pty.read()
- 
-    str_text = 'Eggs, ham and spam ünicode'
-     # text = bytes(str_text, 'utf-8')
-     num_bytes = pty.write(str_text)
+@@ -86,12 +94,13 @@ def test_write(pty_fixture):
  
      line = ''
      start_time = time.time()
@@ -54,6 +49,8 @@
 +    line_clean = strip_ansi_and_breaks(line)
 +    assert str_text in line_clean
      del pty
+ 
+ 
 --- a/winpty/tests/test_ptyprocess.py
 +++ b/winpty/tests/test_ptyprocess.py
 @@ -38,6 +38,11 @@ def pty_fixture(request):
@@ -68,7 +65,7 @@
  @flaky(max_runs=40, min_passes=1)
  def test_read(pty_fixture):
      pty = pty_fixture()
-@@ -45,10 +50,11 @@ def test_read(pty_fixture):
+@@ -45,14 +50,15 @@ def test_read(pty_fixture):
      data = ''
      tries = 0
 -    while loc not in data and tries < 10:
@@ -84,7 +81,9 @@
      pty.terminate()
      time.sleep(2)
  
-@@ -60,10 +66,11 @@ def test_write(pty_fixture):
+ 
+@@ -65,14 +71,15 @@ def test_write(pty_fixture):
+ 
      data = ''
      tries = 0
 -    while text not in data and tries < 10:
@@ -98,3 +97,4 @@
 +    data_clean = strip_ansi_and_breaks(data)
 +    assert text in data_clean
      pty.terminate()
+
