@@ -42,9 +42,9 @@ test:
     - pytest
     - flaky
   commands:
-    - dir {{ SRC_DIR }}
+    - dir .
     - pip check
-    - pytest {{ SRC_DIR }}/winpty/tests -vv
+    - pytest winpty/tests -vv
 
 
 about:
