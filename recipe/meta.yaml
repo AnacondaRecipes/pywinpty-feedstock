@@ -27,9 +27,11 @@ requirements:
     - python
     - pip
     - maturin >=1.1,<2.0
+    # [WinPTY backend library (not ConPTY - ConPTY is built into Windows)
     - winpty 0.4.3
   run:
     - python
+    # Required for WinPTY backend fallback
     - {{ pin_compatible('winpty') }}
 
 test:
@@ -37,14 +39,15 @@ test:
     - winpty
   source_files:
     - winpty/tests
+    - runtests.py
   requires:
     - pip
     - pytest
+    - pytest-timeout
     - flaky
   commands:
-    - dir .
     - pip check
-    - pytest winpty/tests -vv
+    - set CI_RUNNING=1 && python runtests.py --timeout=60  # [win] Tests detect CI and manage CONPTY_CI per backend (ConPTY vs WinPTY)
 
 
 about:
