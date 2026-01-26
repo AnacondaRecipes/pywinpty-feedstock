@@ -1,0 +1,34 @@
+--- a/winpty/tests/test_pty.py
++++ b/winpty/tests/test_pty.py
+@@ -1,6 +1,7 @@
+ # -*- coding: utf-8 -*-
+ """winpty PTY tests."""
+ import os
++import re
+ import time
+ 
+ import pytest
+@@ -66,6 +67,12 @@ def pty_fixture(request):
+     return _pty_factory
+ 
+ 
++def strip_ansi_and_breaks(text):
++    """Remove ANSI escape codes and line breaks that split paths."""
++    return re.sub(r'\x1b\[[0-9;?]*[a-zA-Z]|\r?\n', '', text)
++
++
+ def test_read(pty_fixture, capsys):
+     pty = pty_fixture()
+     loc = os.getcwd()
+@@ -73,10 +80,11 @@ def test_read(pty_fixture, capsys):
+ 
+     with capsys.disabled():
+         start_time = time.time()
+-        while loc not in readline:
++        while loc not in strip_ansi_and_breaks(readline):
+             if time.time() - start_time > 5:
+                 break
+             readline += pty.read()
+-    assert loc in readline or 'cmd' in readline
++    readline_clean = strip_ansi_and_breaks(readline)
++    assert loc in readline_clean or 'cmd' in readline_clean

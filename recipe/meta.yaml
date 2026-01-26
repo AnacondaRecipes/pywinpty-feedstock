@@ -8,6 +8,8 @@ package:
 source:
   url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
   sha256: 312cf39153a8736c617d45ce8b6ad6cd2107de121df91c455b10ce6bba7a39b2
+  patches:
+    - 0002-fix-test-ansi-linebreak.patch
 
 build:
   number: 1
