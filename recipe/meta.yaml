@@ -18,7 +18,7 @@ source:
     sha256: d67f96abc22d4b13efb9a88969caf9929a2e8b1b928843b5ab122455e9640e7f
     folder: winpty-rs-src
     patches:
-      - disable_conpty_backend.patch
+#      - disable_conpty_backend.patch
 
 build:
   number: 0
@@ -34,6 +34,7 @@ requirements:
     - pip
     - maturin >=1.1,<2.0
     - winpty 0.4.3
+    - conpty
   run:
     - python
     - {{ pin_compatible('winpty') }}
