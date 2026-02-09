@@ -1,0 +1,127 @@
+diff --git a/build.rs b/build.rs
+index 41105ea..4991af3 100644
+--- a/build.rs
++++ b/build.rs
+@@ -195,106 +195,28 @@ fn main() {
+             // Check if local ConPTY binaries are available
+ 
+             use std::fs;
+-            let current_path = env::current_dir().unwrap();
+-            // let lib_path = current_path.join("lib");
+-            let lib_path = get_output_path();
+-            if !fs::exists(&lib_path).unwrap() {
+-                fs::create_dir_all(&lib_path).unwrap();
+-            }
+-
+ 
+-            let mut binaries_found = true;
+-            for bin_name in ["conpty.lib", "conpty.dll", "OpenConsole.exe"] {
+-                let bin_path = lib_path.join(bin_name);
+-                binaries_found = binaries_found && bin_path.exists();
++            let lib_path = PathBuf::from(std::env::var("LIBRARY_LIB").unwrap_or_default());
++            let conpty_lib = lib_path.join("conpty.lib");
++            if !conpty_lib.exists() {
++                panic!("ConPTY lib not found in {:?}.", conpty_lib);
+             }
+ 
+-            let mut nuget;
+-
+-            if !binaries_found {
+-                nuget = Command::new("nuget.exe");
+-                let nuget_found = command_ok(nuget.arg("help"));
+-
+-                if !nuget_found {
+-                    panic!("NuGet is required to build winpty-rs");
+-                }
+-
+-                if command_ok(
+-                     Command::new("nuget.exe")
+-                        .current_dir(current_path.to_str().unwrap())
+-                        .arg("install")
+-                        .arg("Microsoft.Windows.Console.ConPTY"),
+-                ) {
+-                    let manifest_dir = env::var("CARGO_MANIFEST_DIR").unwrap();
+-                    let manifest_path = PathBuf::from(Path::new(&manifest_dir));
+-                    for path in glob(
+-                        manifest_path
+-                            .join("Microsoft.Windows.Console.ConPTY*")
+-                            .to_str()
+-                            .unwrap(),
+-                    )
+-                    .unwrap()
+-                    {
+-                        match path {
+-                            Ok(folder) => {
+-                                use std::fs;
+-
+-                                let simplified_arch = match ARCH {
+-                                    "x86_64" => "x64",
+-                                    "arm" => "arm64",
+-                                    "aarch64" => "arm64",
+-                                    _ => ARCH,
+-                                };
+-
+-                                println!("{:?}", folder);
+-                                println!("{:?}", get_output_path());
+-                                let openconsole = folder
+-                                    .join("build")
+-                                    .join("native")
+-                                    .join("runtimes")
+-                                    .join(simplified_arch)
+-                                    .join("OpenConsole.exe");
+-
+-                                let binaries_path = folder
+-                                    .join("runtimes")
+-                                    .join(format!("win-{}", simplified_arch));
+-                                let dll_path = binaries_path.join("native").join("conpty.dll");
+-                                let lib_orig =
+-                                    binaries_path.join("lib").join("uap10.0").join("conpty.lib");
+-
+-                                let openconsole_dst = get_output_path().join("OpenConsole.exe");
+-                                let dll_dst = get_output_path().join("conpty.dll");
+-                                let lib_dst = get_output_path().join("conpty.lib");
+-
+-                                fs::copy(openconsole, openconsole_dst).unwrap();
+-                                fs::copy(dll_path, dll_dst).unwrap();
+-                                fs::copy(lib_orig, lib_dst).unwrap();
+-                                binaries_found = true;
+-
+-                                fs::remove_dir_all(folder).unwrap();
+-                            }
+-                            Err(err) => panic!("{:?}", err),
+-                        }
+-                    }
++            let binaries_path = PathBuf::from(std::env::var("LIBRARY_BIN").unwrap_or_default());
++            for bin_name in ["conpty.dll", "OpenConsole.exe"] {
++                let bin_path = binaries_path.join(bin_name);
++                if !bin_path.exists() {
++                    panic!("ConPTY binary not found in {:?}", bin_path);
+                 }
+             }
+ 
+-            // let conpty_enabled;
+-            if binaries_found {
+-                println!("cargo:rustc-cfg=feature=\"conpty\"");
+-                println!("cargo:rustc-cfg=feature=\"conpty_local\"");
+-
+-                println!(
+-                    "cargo:rustc-link-search=native={}",
+-                    lib_path.to_str().unwrap()
+-                );
+-                println!(
+-                    "cargo:rustc-link-search=native={}",
+-                    lib_path.to_str().unwrap()
+-                );
+-
+-                println!("cargo:rustc-link-lib=dylib=conpty");
+-            }
++            println!("cargo:rustc-link-search=native={}", lib_path.display());
++
++            println!("cargo:rustc-cfg=feature=\"conpty\"");
++            // Don't enable conpty_local, as that is for bundled binaries
++            // println!("cargo:rustc-cfg=feature=\"conpty_local\"");
++
++            println!("cargo:rustc-link-lib=dylib=conpty");
+         }
+ 
+         // Check if winpty is installed
