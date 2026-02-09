@@ -1,8 +1,8 @@
 diff --git a/build.rs b/build.rs
-index 41105ea..4991af3 100644
+index 41105ea..f06dbac 100644
 --- a/build.rs
 +++ b/build.rs
-@@ -195,106 +195,28 @@ fn main() {
+@@ -195,106 +195,29 @@ fn main() {
              // Check if local ConPTY binaries are available
  
              use std::fs;
@@ -92,7 +92,8 @@ index 41105ea..4991af3 100644
 -                        }
 -                    }
 +            let binaries_path = PathBuf::from(std::env::var("LIBRARY_BIN").unwrap_or_default());
-+            for bin_name in ["conpty.dll", "OpenConsole.exe"] {
++            //for bin_name in ["conpty.dll", "OpenConsole.exe"] {
++            for bin_name in ["conpty.dll"] {
 +                let bin_path = binaries_path.join(bin_name);
 +                if !bin_path.exists() {
 +                    panic!("ConPTY binary not found in {:?}", bin_path);
