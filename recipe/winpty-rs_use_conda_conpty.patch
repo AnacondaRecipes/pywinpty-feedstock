@@ -1,5 +1,5 @@
 diff --git a/build.rs b/build.rs
-index 41105ea..f06dbac 100644
+index 41105ea..ae7605b 100644
 --- a/build.rs
 +++ b/build.rs
 @@ -195,106 +195,29 @@ fn main() {
@@ -119,8 +119,8 @@ index 41105ea..f06dbac 100644
 +            println!("cargo:rustc-link-search=native={}", lib_path.display());
 +
 +            println!("cargo:rustc-cfg=feature=\"conpty\"");
-+            // Don't enable conpty_local, as that is for bundled binaries
-+            // println!("cargo:rustc-cfg=feature=\"conpty_local\"");
++            // Enable conpty_local, as OpenConsole.exe is now part of the conpty package
++            println!("cargo:rustc-cfg=feature=\"conpty_local\"");
 +
 +            println!("cargo:rustc-link-lib=dylib=conpty");
          }
