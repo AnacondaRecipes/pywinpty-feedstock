@@ -39,6 +39,7 @@ requirements:
   run:
     - python
     - {{ pin_compatible('winpty') }}
+    - {{ pin_compatible('conpty') }}
 
 test:
   imports:
