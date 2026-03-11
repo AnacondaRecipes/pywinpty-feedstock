@@ -22,22 +22,24 @@ source:
       - winpty-rs_use_conda_conpty.patch
 
 build:
-  number: 0
+  number: 1
   skip: true  # [(not win) or py<39]
 
 requirements:
   build:
-    - {{ compiler('rust') }}
     - {{ compiler('cxx') }}
+    - {{ compiler('rust') }}
     - cargo-bundle-licenses
   host:
     - python
     - pip
     - maturin >=1.1,<2.0
+    # WinPTY backend library (not ConPTY - ConPTY is built into Windows)
     - winpty 0.4.3
     - conpty
   run:
     - python
+    # Required for WinPTY backend fallback
     - {{ pin_compatible('winpty') }}
     - {{ pin_compatible('conpty') }}
 
@@ -46,6 +48,9 @@ test:
     - pywinpty-src/winpty/tests
   imports:
     - winpty
+  source_files:
+    - winpty/tests
+    - runtests.py
   requires:
     - pip
     - pytest

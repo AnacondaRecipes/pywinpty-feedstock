@@ -1,0 +1,11 @@
+# Could not solve for environment specs
+# The following packages are incompatible
+# ├─ rust_win-64 =1.89.0 * is installable and it requires
+# │  └─ vs_win-64 =2019.11 *, which can be installed;
+# └─ vs_win-64 =2022.14 * is not installable because it requires
+#    └─ vs2022_win-64 =19.44.35207 *, which requires
+#       └─ vs_win-64 ==2022.14 *, which conflicts with any installable versions previously reported.
+c_compiler:                    # [win]
+  - vs2019                     # [win]
+cxx_compiler:                  # [win]
+  - vs2019                     # [win]
