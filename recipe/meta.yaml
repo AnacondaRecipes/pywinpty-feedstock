@@ -26,7 +26,7 @@ source:
       - winpty-rs_use_conda_conpty.patch
 
 build:
-  number: 1
+  number: 0
   skip: true  # [(not win) or py<39]
 
 requirements:
