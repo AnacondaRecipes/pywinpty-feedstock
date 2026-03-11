@@ -46,11 +46,9 @@ requirements:
 test:
   source_files:
     - pywinpty-src/winpty/tests
+    - pywinpty-src/runtests.py
   imports:
     - winpty
-  source_files:
-    - winpty/tests
-    - runtests.py
   requires:
     - pip
     - pytest
@@ -59,7 +57,7 @@ test:
     - pip check
     - python -c "from importlib.metadata import version; assert(version('{{ name }}')=='{{ version }}')"
     - pytest -vvv --deselect="pywinpty-src/winpty/tests/test_ptyprocess.py::test_read" pywinpty-src/winpty/tests
-    - set CI_RUNNING=1 && python runtests.py --timeout=60  # [win] Tests detect CI and manage CONPTY_CI per backend (ConPTY vs WinPTY)
+    - set CI_RUNNING=1 && python pywinpty-src/runtests.py --timeout=60  # [win] Tests detect CI and manage CONPTY_CI per backend (ConPTY vs WinPTY)
 
 about:
   home: https://github.com/andfoy/pywinpty
