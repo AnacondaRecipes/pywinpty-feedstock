@@ -12,6 +12,10 @@ source:
     patches:
       - skip-pywinpty-nuget.patch
       - use_local_winpty-rs.patch
+      # Fix tests to handle ANSI escape codes and line breaks that split paths.
+      # Terminal line-wrap inserts \x1b[0K (clear to EOL) and \r\n mid-path when width < path length. 
+      # Stripping these before comparison fixes the match.
+      - 0002-fix-test-ansi-linebreak.patch
 
   # winpty-rs: vendored in dependency
   - url: https://github.com/andfoy/winpty-rs/archive/refs/tags/v1.0.4.tar.gz
