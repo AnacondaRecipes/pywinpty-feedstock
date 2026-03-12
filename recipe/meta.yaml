@@ -56,6 +56,7 @@ test:
   requires:
     - pip
     - pytest
+    - pytest-timeout
     - flaky
   commands:
     - pip check
