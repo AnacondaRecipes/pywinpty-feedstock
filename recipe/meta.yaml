@@ -62,7 +62,7 @@ test:
   commands:
     - pip check
     - python -c "from importlib.metadata import version; assert(version('{{ name }}')=='{{ version }}')"
-    - pytest -vvv --deselect="pywinpty-src/winpty/tests/test_ptyprocess.py::test_read" pywinpty-src/winpty/tests
+    - pytest -vvv pywinpty-src/winpty/tests
     # Tests detect CI and manage CONPTY_CI per backend (ConPTY vs WinPTY)
     - set CI_RUNNING=1 && python pywinpty-src/runtests.py --timeout=60
 
