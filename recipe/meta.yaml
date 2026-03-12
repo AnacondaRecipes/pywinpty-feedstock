@@ -33,9 +33,9 @@ requirements:
   build:
     - {{ compiler('cxx') }}
     - {{ compiler('rust') }}
+    - {{ stdlib('c') }}
     - cargo-bundle-licenses
   host:
-    - {{ stdlib('c') }}
     - python
     - pip
     - maturin >=1.1,<2.0
