@@ -10,20 +10,20 @@ source:
     sha256: 1505cc4cb248af42cb6285a65c9c2086ee9e7e574078ee60933d5d7fa86fb004
     folder: pywinpty-src
     patches:
-      - skip-pywinpty-nuget.patch
-      - use_local_winpty-rs.patch
+      - patches/skip-pywinpty-nuget.patch
+      - patches/use_local_winpty-rs.patch
       # Fix tests to handle ANSI escape codes and line breaks that split paths.
       # Terminal line-wrap inserts \x1b[0K (clear to EOL) and \r\n mid-path when width < path length. 
       # Stripping these before comparison fixes the match.
-      - 0002-fix-test-ansi-linebreak.patch
+      - patches/0002-fix-test-ansi-linebreak.patch
 
   # winpty-rs: vendored in dependency
   - url: https://github.com/andfoy/winpty-rs/archive/refs/tags/v1.0.4.tar.gz
     sha256: d67f96abc22d4b13efb9a88969caf9929a2e8b1b928843b5ab122455e9640e7f
     folder: winpty-rs-src
     patches:
-      #- disable_conpty_backend.patch
-      - winpty-rs_use_conda_conpty.patch
+      #- patches/disable_conpty_backend.patch
+      - patches/winpty-rs_use_conda_conpty.patch
 
 build:
   number: 0
