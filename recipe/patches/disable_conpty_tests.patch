@@ -1,0 +1,26 @@
+diff --git a/winpty/tests/test_pty.py b/winpty/tests/test_pty.py
+index 52fb4c1..25ca478 100644
+--- a/winpty/tests/test_pty.py
++++ b/winpty/tests/test_pty.py
+@@ -38,7 +38,7 @@ conpty_provider = pty_factory(Backend.ConPTY)
+ winpty_provider = pty_factory(Backend.WinPTY)
+ 
+ 
+-@pytest.fixture(scope='module', params=['WinPTY', 'ConPTY'])
++@pytest.fixture(scope='module', params=['WinPTY'])
+ def pty_fixture(request):
+     backend = request.param
+     if os.environ.get('CI_RUNNING', None) == '1':
+diff --git a/winpty/tests/test_ptyprocess.py b/winpty/tests/test_ptyprocess.py
+index 1d7662d..aad70ed 100644
+--- a/winpty/tests/test_ptyprocess.py
++++ b/winpty/tests/test_ptyprocess.py
+@@ -19,7 +19,7 @@ from winpty.ptyprocess import PtyProcess, which
+ 
+ 
+ 
+-@pytest.fixture(scope='module', params=['WinPTY', 'ConPTY'])
++@pytest.fixture(scope='module', params=['WinPTY'])
+ def pty_fixture(request):
+     backend = request.param
+     if os.environ.get('CI_RUNNING', None) == '1':

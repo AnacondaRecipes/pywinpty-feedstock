@@ -1,0 +1,14 @@
+diff --git a/Cargo.toml b/Cargo.toml
+index 53c075f..3022765 100644
+--- a/Cargo.toml
++++ b/Cargo.toml
+@@ -17,7 +17,8 @@ crate-type = ["cdylib"]
+ glob = "0.3.2"
+ 
+ [dependencies]
+-winpty-rs = "1.0.4"
++# We'll use a local version of winpty-rs (vendored)
++winpty-rs = { path = "../winpty-rs-src" }
+ 
+ [dependencies.pyo3]
+ version = "0.26.0"

@@ -1,0 +1,23 @@
+diff --git a/build.rs b/build.rs
+index 41105ea..ef43987 100644
+--- a/build.rs
++++ b/build.rs
+@@ -177,15 +177,9 @@ fn main() {
+         // let kernel32 = kernel32_res.unwrap();
+ 
+         // let conpty = unsafe { GetProcAddress(kernel32, "CreatePseudoConsole".into_pcstr()) };
+-        match major_version >= 10 && build_version >= 2004 {
+-            true => {
+-                conpty_enabled = "1";
+-                println!("cargo:rustc-cfg=feature=\"conpty\"")
+-            }
+-            false => {
+-                conpty_enabled = "0";
+-            }
+-        }
++
++        // Skip ConPTY - use WinPTY backend only
++        conpty_enabled = "0";
+ 
+         println!("ConPTY enabled: {}", conpty_enabled);
+         println!("Output path: {}", get_output_path().to_str().unwrap());
