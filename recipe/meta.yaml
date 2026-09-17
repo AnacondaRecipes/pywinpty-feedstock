@@ -1,4 +1,4 @@
-{% set version = "3.0.2" %}
+{% set version = "3.0.5" %}
 {% set name = "pywinpty" %}
 
 package:
@@ -7,27 +7,26 @@ package:
 
 source:
   - url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
-    sha256: 1505cc4cb248af42cb6285a65c9c2086ee9e7e574078ee60933d5d7fa86fb004
+    sha256: 61db0db063de9865adbea66db294628f8577f608d9764a4c7d3384eeacc4e81b
     folder: pywinpty-src
     patches:
+      # PyPI's build.rs vendors ConPTY from NuGet; this build links the conda
+      # `conpty` package instead, so skip that download.
       - patches/skip-pywinpty-nuget.patch
       - patches/use_local_winpty-rs.patch
-      # Fix tests to handle ANSI escape codes and line breaks that split paths.
-      # Terminal line-wrap inserts \x1b[0K (clear to EOL) and \r\n mid-path when width < path length. 
-      # Stripping these before comparison fixes the match.
-      - patches/0002-fix-test-ansi-linebreak.patch
 
-  # winpty-rs: vendored in dependency
-  - url: https://github.com/andfoy/winpty-rs/archive/refs/tags/v1.0.4.tar.gz
-    sha256: d67f96abc22d4b13efb9a88969caf9929a2e8b1b928843b5ab122455e9640e7f
+  # winpty-rs: vendored so that ConPTY can link against the conda conpty package
+  - url: https://github.com/andfoy/winpty-rs/archive/refs/tags/v1.0.6.tar.gz
+    sha256: ac15210cbfd52f44fb66b6f9ad59466eeb46e5d6997cb6769e72d68d13f1dda6
     folder: winpty-rs-src
     patches:
-      #- patches/disable_conpty_backend.patch
+      # Build ConPTY against the conpty.dll/OpenConsole.exe from conda's
+      # `conpty` package instead of downloading them from NuGet.
       - patches/winpty-rs_use_conda_conpty.patch
 
 build:
   number: 0
-  skip: true  # [(not win) or py<39]
+  skip: true  # [(not win) or py<310]
 
 requirements:
   build:
@@ -39,37 +38,28 @@ requirements:
     - python
     - pip
     - maturin >=1.1,<2.0
-    # WinPTY backend library (not ConPTY - ConPTY is built into Windows)
+    # WinPTY backend library and ConPTY binaries (conpty.dll/OpenConsole.exe)
     - winpty 0.4.3
     - conpty
   run:
     - python
-    # Required for WinPTY backend fallback
+    # Required for the WinPTY backend
     - {{ pin_compatible('winpty') }}
+    # Required for the ConPTY backend
     - {{ pin_compatible('conpty') }}
 
 test:
-  source_files:
-    - pywinpty-src/winpty/tests
-    - pywinpty-src/runtests.py
   imports:
     - winpty
   requires:
     - pip
-    - pytest
-    - pytest-timeout
-    - flaky
   commands:
     - pip check
     - python -c "from importlib.metadata import version; assert(version('{{ name }}')=='{{ version }}')"
-    # The ConPTY parameterizations are deselected: with conda's conpty.dll /
-    # OpenConsole.exe the ConPTY backend is racy on Windows 11 ARM64 (build
-    # 28000). pty.read() can block forever and input echo is not reliable, so
-    # test_write[ConPTY] both flaked and hit the test timeout. The WinPTY
-    # backend is stable, so we exercise that instead.
-    - pytest -vvv pywinpty-src/winpty/tests -k "not ConPTY" --timeout=60 --timeout-method=thread
-    # Tests detect CI and manage CONPTY_CI per backend (ConPTY vs WinPTY)
-    - set CI_RUNNING=1 && python pywinpty-src/runtests.py --timeout=60 -k "not ConPTY"
+    # recipe/run_test.py exercises both the ConPTY and WinPTY backends
+    # (Unicode I/O, child-observed resize, exit status) with non-blocking
+    # reads. pywinpty's upstream pytest suite is not run: its blocking
+    # pty.read() calls hang intermittently on Windows on ARM.
 
 about:
   home: https://github.com/andfoy/pywinpty
