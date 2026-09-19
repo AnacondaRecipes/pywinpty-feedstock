@@ -1,16 +1,15 @@
 diff --git a/build.rs b/build.rs
-index 0e509b5..daf1541 100644
 --- a/build.rs
 +++ b/build.rs
-@@ -27,7 +27,11 @@ fn main() {
+@@ -25,9 +25,11 @@ fn main() {
+     if !binaries_found {
+         let mut nuget = Command::new("nuget.exe");
          let nuget_found = command_ok(nuget.arg("help"));
  
          if !nuget_found {
 -            panic!("NuGet is required to build pywinpty");
-+            // Skip NuGet - use conda-provided winpty
-+            println!("cargo:warning=Skipping NuGet check, using system-provided winpty");
-+            println!("cargo:rustc-link-search=native={}", env::var("LIBRARY_LIB").unwrap_or_default());
-+            println!("cargo:rustc-link-lib=winpty");
++            // This build uses the WinPTY backend only, so there is no ConPTY
++            // payload to vendor: skip the NuGet download instead of failing.
 +            return;
          }
  

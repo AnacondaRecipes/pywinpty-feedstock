@@ -1,11 +1,13 @@
 diff --git a/build.rs b/build.rs
-index 41105ea..ae7605b 100644
 --- a/build.rs
 +++ b/build.rs
-@@ -195,106 +195,29 @@ fn main() {
-             // Check if local ConPTY binaries are available
+@@ -287,102 +287,27 @@
+         // println!("ConPTY binaries found locally: {}", conpty_locally_enabled);
  
-             use std::fs;
+         if conpty_enabled == "1" {
+-            // Check if local ConPTY binaries are available
+-
+-            use std::fs;
 -            let current_path = env::current_dir().unwrap();
 -            // let lib_path = current_path.join("lib");
 -            let lib_path = get_output_path();
@@ -13,17 +15,13 @@ index 41105ea..ae7605b 100644
 -                fs::create_dir_all(&lib_path).unwrap();
 -            }
 -
- 
+-
 -            let mut binaries_found = true;
 -            for bin_name in ["conpty.lib", "conpty.dll", "OpenConsole.exe"] {
 -                let bin_path = lib_path.join(bin_name);
 -                binaries_found = binaries_found && bin_path.exists();
-+            let lib_path = PathBuf::from(std::env::var("LIBRARY_LIB").unwrap_or_default());
-+            let conpty_lib = lib_path.join("conpty.lib");
-+            if !conpty_lib.exists() {
-+                panic!("ConPTY lib not found in {:?}.", conpty_lib);
-             }
- 
+-            }
+-
 -            let mut nuget;
 -
 -            if !binaries_found {
@@ -32,7 +30,19 @@ index 41105ea..ae7605b 100644
 -
 -                if !nuget_found {
 -                    panic!("NuGet is required to build winpty-rs");
--                }
++            // Use the ConPTY binaries provided by the conda `conpty` package.
++            let lib_path = PathBuf::from(std::env::var("LIBRARY_LIB").unwrap_or_default());
++            let conpty_lib = lib_path.join("conpty.lib");
++            if !conpty_lib.exists() {
++                panic!("ConPTY lib not found in {:?}.", conpty_lib);
++            }
++
++            let binaries_path = PathBuf::from(std::env::var("LIBRARY_BIN").unwrap_or_default());
++            for bin_name in ["conpty.dll", "OpenConsole.exe"] {
++                let bin_path = binaries_path.join(bin_name);
++                if !bin_path.exists() {
++                    panic!("ConPTY binary not found in {:?}", bin_path);
+                 }
 -
 -                if command_ok(
 -                     Command::new("nuget.exe")
@@ -53,13 +63,6 @@ index 41105ea..ae7605b 100644
 -                        match path {
 -                            Ok(folder) => {
 -                                use std::fs;
--
--                                let simplified_arch = match ARCH {
--                                    "x86_64" => "x64",
--                                    "arm" => "arm64",
--                                    "aarch64" => "arm64",
--                                    _ => ARCH,
--                                };
 -
 -                                println!("{:?}", folder);
 -                                println!("{:?}", get_output_path());
@@ -91,15 +94,9 @@ index 41105ea..ae7605b 100644
 -                            Err(err) => panic!("{:?}", err),
 -                        }
 -                    }
-+            let binaries_path = PathBuf::from(std::env::var("LIBRARY_BIN").unwrap_or_default());
-+            //for bin_name in ["conpty.dll", "OpenConsole.exe"] {
-+            for bin_name in ["conpty.dll"] {
-+                let bin_path = binaries_path.join(bin_name);
-+                if !bin_path.exists() {
-+                    panic!("ConPTY binary not found in {:?}", bin_path);
-                 }
-             }
- 
+-                }
+-            }
+-
 -            // let conpty_enabled;
 -            if binaries_found {
 -                println!("cargo:rustc-cfg=feature=\"conpty\"");
@@ -116,12 +113,13 @@ index 41105ea..ae7605b 100644
 -
 -                println!("cargo:rustc-link-lib=dylib=conpty");
 -            }
++            }
++
 +            println!("cargo:rustc-link-search=native={}", lib_path.display());
 +
 +            println!("cargo:rustc-cfg=feature=\"conpty\"");
-+            // Enable conpty_local, as OpenConsole.exe is now part of the conpty package
++            // Enable conpty_local so that conpty.dll from the conpty package is used
 +            println!("cargo:rustc-cfg=feature=\"conpty_local\"");
-+
 +            println!("cargo:rustc-link-lib=dylib=conpty");
          }
  
